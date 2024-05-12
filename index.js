@@ -2,7 +2,7 @@ const restart = document.getElementById("replay")
 const restartIcon = document.getElementById("replayIcon")
 // const gameMode = document.getElementById("gameMode")
 const url = "./data.json"
-var data = localStorage.getItem("data")
+let data = localStorage.getItem("data")
 const body = document.body
 const keyboard = document.getElementById("keyboard")
 const key = document.querySelectorAll(".key")
@@ -25,7 +25,16 @@ const settingsIco = document.getElementById("settingsIco")
 const dbInfo = document.getElementById("dbInfo")
 const updateDb = document.getElementById("updateDb")
 let hasWin = false
-
+const currentStreak = document.getElementById("currentStreak")
+const maxStreak = document.getElementById("maxStreak")
+let currentStreakScore = 0
+let maxStreakScore = localStorage.getItem("maxStreak")
+if (maxStreakScore == undefined) {
+    maxStreakScore = 0
+    localStorage.setItem("maxStreak", maxStreakScore)
+}
+maxStreak.innerHTML = "Best Streak: " + maxStreakScore
+currentStreak.innerHTML = "Current streak: " + currentStreakScore
 
 if (lang == undefined) {
     lang = navigator.language
@@ -142,36 +151,36 @@ function chooseWord() { //return a random word from the list
 }
 
 function createDefinition(def) {
-    const definitionsContainer = document.createElement("div")
-    for (let i = 0; i < def[0].meanings.length; i++) {
-        const meaningBlock = document.createElement("div")
-        meaningBlock.setAttribute("class", "meanings")
-        const meaningNumber = document.createElement("p")
-        meaningNumber.setAttribute("class", "meaningNumber")
-        const meaningNumberText = document.createTextNode(" Meaning " + (i + 1) + ": " + def[0].meanings[0].partOfSpeech)
-        meaningNumber.appendChild(meaningNumberText)
-        meaningBlock.appendChild(meaningNumber)
-        for (let j = 0; j < def[0].meanings[i].definitions.length; j++) {
-            const meaningPara = document.createElement("p")
-            if (j % 2 == 0) {
-                meaningPara.setAttribute("class", "even defPara")
+    if (def.title == undefined) {
+        const definitionsContainer = document.createElement("div")
+        for (let i = 0; i < def[0].meanings.length; i++) {
+            const meaningBlock = document.createElement("div")
+            meaningBlock.setAttribute("class", "meanings")
+            const meaningNumber = document.createElement("p")
+            meaningNumber.setAttribute("class", "meaningNumber")
+            const meaningNumberText = document.createTextNode(" Meaning " + (i + 1) + ": " + def[0].meanings[0].partOfSpeech)
+            meaningNumber.appendChild(meaningNumberText)
+            meaningBlock.appendChild(meaningNumber)
+            for (let j = 0; j < def[0].meanings[i].definitions.length; j++) {
+                const meaningPara = document.createElement("p")
+                if (j % 2 == 0) {
+                    meaningPara.setAttribute("class", "even defPara")
+                }
+                else if (j % 2 == 1) {
+                    meaningPara.setAttribute("class", "odd defPara")
+                }
+                const text = j + 1 + ": " + def[0].meanings[i].definitions[j].definition
+                const meaningText = document.createTextNode(text)
+                meaningPara.appendChild(meaningText)
+                meaningBlock.appendChild(meaningPara)
+                definitionsContainer.appendChild(meaningBlock)
+                definition.setAttribute("data-found", "true")
             }
-            else if (j % 2 == 1) {
-                meaningPara.setAttribute("class", "odd defPara")
-            }
-            const text = j + 1 + ": " + def[0].meanings[i].definitions[j].definition
-            const meaningText = document.createTextNode(text)
-            meaningPara.appendChild(meaningText)
-            meaningBlock.appendChild(meaningPara)
-            definitionsContainer.appendChild(meaningBlock)
-            console.log(definitionsContainer);
-
         }
+        definitionsContainer.setAttribute("id", "definitionsContainer")
+        const parentDiv = document.getElementById("meanings")
+        parentDiv.appendChild(definitionsContainer)
     }
-    console.log(definitionsContainer);
-    definitionsContainer.setAttribute("id", "definitionsContainer")
-    const parentDiv = document.getElementById("meanings")
-    parentDiv.appendChild(definitionsContainer)
 }
 
 function fetchDefinition(word) {
@@ -344,10 +353,6 @@ function restartGame() {
 }
 
 function init(isV2, initiator) {
-    // for (const element of key) {
-    //     element.setAttribute("data-state", "playble")
-    // }
-
     let word
     if (listenerSet == false) {
         setListerners()
@@ -362,25 +367,25 @@ function init(isV2, initiator) {
         word = prompt("Choose a word (english alphabet letters only)")
         let validCharFound
         console.log((word != null || word != "") == false);
-        if(word != null && word != ""){
-        const validChars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-        for (const letter of word.split("")) {
-            validCharFound = false
-            for (const validLetter of validChars) {
-                console.log("letter", letter, "validLetter", validLetter)
-                if (letter == validLetter) {
-                    validCharFound = true
-                    console.log("validWord");
+        if (word != null && word != "") {
+            const validChars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+            for (const letter of word.split("")) {
+                validCharFound = false
+                for (const validLetter of validChars) {
+                    console.log("letter", letter, "validLetter", validLetter)
+                    if (letter == validLetter) {
+                        validCharFound = true
+                        console.log("validWord");
+                    }
+                }
+                if (validCharFound == false) {
+                    break;
                 }
             }
-            if (validCharFound == false) {
-                break;
-            }
         }
-    }
-    else{
-        validCharFound = false
-    }
+        else {
+            validCharFound = false
+        }
         console.log(validCharFound);
 
 
@@ -406,10 +411,10 @@ function init(isV2, initiator) {
                 body.setAttribute("data-gameMode", "v2")
             }
             else {
-                if(initiator == "chooseWord"){
+                if (initiator == "chooseWord") {
                     body.setAttribute("data-gameMode", "v2")
                 }
-                else{
+                else {
                     body.setAttribute("data-gameMode", "classic")
                 }
             }
@@ -466,6 +471,16 @@ function keyPress(keyName, number) {
                 body.setAttribute("data-end", "win")
                 definition.setAttribute("data-gameStatue", "finished")
                 hasWin = !hasWin
+                const gameMode = body.getAttribute("data-gamemode")
+                if (gameMode == "classic") {
+                    currentStreakScore++
+                }
+                if (currentStreakScore > maxStreakScore) {
+                    maxStreakScore = currentStreakScore
+                    localStorage.setItem("maxStreak", maxStreakScore)
+                    maxStreak.innerHTML = "Best Streak: " + maxStreakScore
+                }
+                currentStreak.innerHTML = "Current streak: " + currentStreakScore
             }
         }
         if (life == 10) {
@@ -473,6 +488,8 @@ function keyPress(keyName, number) {
             write(word)
             body.setAttribute("data-end", "lost")
             definition.setAttribute("data-gameStatue", "finished")
+            currentStreakScore = 0
+            currentStreak.innerHTML = "Current streak: " + currentStreakScore
         }
         else {
             reset(foundLetters)

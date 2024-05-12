@@ -381,7 +381,7 @@ body[data-theme=light]>footer>a>#githubMark {
     cursor: pointer;
 }
 
-body[data-gamemode=classic] #definition[lang=en][data-gameStatue=finished] {
+body[data-gamemode=classic] #definition[lang=en][data-gameStatue=finished][data-found=true] {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -856,6 +856,25 @@ body[data-theme=light] #dbInfo{
         opacity: 0;
     }
 }
+
+#streakCounter{
+    position: absolute;
+    bottom: -60px;
+    text-align: center;
+}
+
+.streak{
+    font-weight: bold;
+}
+
+body[data-theme=dark] .streak{
+    color: #fff;
+}
+
+body[data-theme=light] .streak{
+    color: #000;
+}
+
 
 
 #a {
