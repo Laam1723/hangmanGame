@@ -858,8 +858,9 @@ body[data-theme=light] #dbInfo{
 }
 
 #streakCounter{
-    position: absolute;
-    bottom: -60px;
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
     text-align: center;
 }
 
