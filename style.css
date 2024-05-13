@@ -713,7 +713,7 @@ body[data-theme=light] #tailOutSettings {
     width: 186px;
 }
 
-#dbInfo{
+#dbInfo {
     width: 83px;
     min-height: 24px;
     font-size: 11px;
@@ -723,11 +723,11 @@ body[data-theme=light] #tailOutSettings {
     margin-top: 1px;
 }
 
-body[data-theme=dark] #dbInfo{
+body[data-theme=dark] #dbInfo {
     color: #FFF;
 }
 
-body[data-theme=light] #dbInfo{
+body[data-theme=light] #dbInfo {
     color: #000;
 }
 
@@ -857,22 +857,26 @@ body[data-theme=light] #dbInfo{
     }
 }
 
-#streakCounter{
+#streakCounter {
     position: fixed;
-    right: 5px;
-    bottom: 5px;
+    right: 10px;
+    bottom: 10px;
     text-align: center;
+    padding: 0px;
+    margin: 0px;
+
 }
 
-.streak{
+.streak {
+    font-size: 12px;
     font-weight: bold;
 }
 
-body[data-theme=dark] .streak{
+body[data-theme=dark] .streak {
     color: #fff;
 }
 
-body[data-theme=light] .streak{
+body[data-theme=light] .streak {
     color: #000;
 }
 
@@ -1130,6 +1134,10 @@ body[data-keyboard=qwerty] #n {
         animation: slide-up-pc .3s ease 0s 1 normal none;
     }
 
+    .streak {
+        font-size: 16px;
+    }
+
     #a {
         grid-area: 1 / 1 / 3 / 3;
     }
@@ -1261,7 +1269,7 @@ body[data-keyboard=qwerty] #n {
     #b {
         grid-area: 5 / 11 / 7 / 13;
     }
-    
+
     body[data-keyboard=qwerty] #b {
         grid-area: 5 / 11 / 7 / 13;
     }
