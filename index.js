@@ -141,17 +141,16 @@ function saveToLs(data) {
 }
 
 function chooseWord() { //return a random word from the list
-    let dbLength = 10**(data[lang].length.toString().length)
+    let dbLength = 10 ** (data[lang].length.toString().length)
     console.log(dbLength, data[lang].length.toString().length);
     var random
     while (random <= data[lang].length == false) {
         random = Math.round(Math.random() * dbLength)
-        
+
     }
     // console.log(random);
     const word = data[lang][random]
-    console.log(random);
-    
+
     return word
 }
 
@@ -213,25 +212,37 @@ function write(wordToWrite) {
 }
 
 //different style of keys
-
+let spaceAlreadyPressed = false
 function setListerners() {
-    document.addEventListener("keypress", (e) => {
+    document.addEventListener("keydown", (e) => {
         if (e.code == "Space") {
+            spaceAlreadyPressed = true
             const gameMode = body.getAttribute("data-gameMode")
             const word = JSON.parse(localStorage.getItem("word"))
-            console.log(nbKeyUsed, life);
-            if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
+            console.log(nbKeyUsed, life)
+            if( hasWin == true || hasLost == true){
+                if (gameMode == "classic") {
+                    restartGame()
+                    reset(word)
+                    init(false)
+                }
+
+                if (gameMode == "v2") {
+                    init(true, "chooseWord")
+                }
+            }
+            else if (nbKeyUsed >= 1 && hasWin == false && hasLost == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
                 currentStreakScore = 0
                 currentStreak.innerHTML = "Current streak: " + currentStreakScore
-            }
-            if (gameMode == "classic") {
-                restartGame()
-                reset(word)
-                init(false)
-            }
+                if (gameMode == "classic") {
+                    restartGame()
+                    reset(word)
+                    init(false)
+                }
 
-            if (gameMode == "v2") {
-                init(true, "chooseWord")
+                if (gameMode == "v2") {
+                    init(true, "chooseWord")
+                }
             }
         }
         else {
@@ -263,21 +274,26 @@ function setListerners() {
     })
 
     restart.addEventListener('click', () => {
-        const gameMode = body.getAttribute("data-gameMode")
-        const word = JSON.parse(localStorage.getItem("word"))
-        console.log(nbKeyUsed, life);
-        if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
-            currentStreakScore = 0
-            currentStreak.innerHTML = "Current streak: " + currentStreakScore
-        }
-        if (gameMode == "classic") {
-            restartGame()
-            reset(word)
-            init(false)
-        }
+        if (spaceAlreadyPressed == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
+            const gameMode = body.getAttribute("data-gameMode")
+            const word = JSON.parse(localStorage.getItem("word"))
+            console.log(nbKeyUsed, life);
+            if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
+                currentStreakScore = 0
+                currentStreak.innerHTML = "Current streak: " + currentStreakScore
+            }
+            if (gameMode == "classic") {
+                restartGame()
+                reset(word)
+                init(false)
+            }
 
-        if (gameMode == "v2") {
-            init(true, "chooseWord")
+            if (gameMode == "v2") {
+                init(true, "chooseWord")
+            }
+        }
+        else {
+            spaceAlreadyPressed = false
         }
     })
 
@@ -477,7 +493,6 @@ function looseLife() {
 
 function keyPress(keyName, number) {
     if (life <= 9 && hasWin == false) {
-        nbKeyUsed++
         key[number].setAttribute("data-state", "used")
         var usedLetters = JSON.parse(localStorage.getItem("usedLetters"))
         var found = false
@@ -533,7 +548,7 @@ function keyPress(keyName, number) {
         localStorage.setItem("numberOfFoundLetters", JSON.stringify(numberOfFoundLetters))
         localStorage.setItem("usedLetters", JSON.stringify(usedLetters))
         removeListeners(key, number)
-
+        nbKeyUsed++
     }
 
 }

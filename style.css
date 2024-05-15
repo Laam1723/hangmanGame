@@ -289,6 +289,7 @@ p {
     justify-content: center;
     padding: 5px;
     transition: 0.3s;
+    outline: none;
     animation: down 0.5s ease-in-out 0s 1 normal none;
 }
 
