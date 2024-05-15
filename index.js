@@ -71,7 +71,6 @@ keyboardSelect.value = keyboardLang
 
 
 let word
-let dbLength = 1000
 let listenerSet = false
 let life = 0
 let countThemeChanged = 0
@@ -142,12 +141,17 @@ function saveToLs(data) {
 }
 
 function chooseWord() { //return a random word from the list
+    let dbLength = 10**(data[lang].length.toString().length)
+    console.log(dbLength, data[lang].length.toString().length);
     var random
     while (random <= data[lang].length == false) {
         random = Math.round(Math.random() * dbLength)
+        
     }
     // console.log(random);
     const word = data[lang][random]
+    console.log(random);
+    
     return word
 }
 
@@ -230,7 +234,7 @@ function setListerners() {
                 init(true, "chooseWord")
             }
         }
-        else{
+        else {
             keyPress(e.key, e.key.charCodeAt(0) - 97)
         }
     })
