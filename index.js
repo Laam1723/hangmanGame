@@ -25,6 +25,7 @@ const settingsIco = document.getElementById("settingsIco")
 const dbInfo = document.getElementById("dbInfo")
 const updateDb = document.getElementById("updateDb")
 let hasWin = false
+let hasLost = false
 const currentStreak = document.getElementById("currentStreak")
 const maxStreak = document.getElementById("maxStreak")
 let currentStreakScore = 0
@@ -211,7 +212,27 @@ function write(wordToWrite) {
 
 function setListerners() {
     document.addEventListener("keypress", (e) => {
-        keyPress(e.key, e.key.charCodeAt(0) - 97)
+        if (e.code == "Space") {
+            const gameMode = body.getAttribute("data-gameMode")
+            const word = JSON.parse(localStorage.getItem("word"))
+            console.log(nbKeyUsed, life);
+            if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
+                currentStreakScore = 0
+                currentStreak.innerHTML = "Current streak: " + currentStreakScore
+            }
+            if (gameMode == "classic") {
+                restartGame()
+                reset(word)
+                init(false)
+            }
+
+            if (gameMode == "v2") {
+                init(true, "chooseWord")
+            }
+        }
+        else{
+            keyPress(e.key, e.key.charCodeAt(0) - 97)
+        }
     })
 
     key.forEach((element, index) => {
@@ -240,6 +261,11 @@ function setListerners() {
     restart.addEventListener('click', () => {
         const gameMode = body.getAttribute("data-gameMode")
         const word = JSON.parse(localStorage.getItem("word"))
+        console.log(nbKeyUsed, life);
+        if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
+            currentStreakScore = 0
+            currentStreak.innerHTML = "Current streak: " + currentStreakScore
+        }
         if (gameMode == "classic") {
             restartGame()
             reset(word)
@@ -350,6 +376,7 @@ function restartGame() {
     definition.setAttribute("data-alreadyDeployed", "false")
     definition.setAttribute("data-space", "collapsed")
     hasWin = false
+    hasLost = false
 }
 
 function init(isV2, initiator) {
@@ -446,6 +473,7 @@ function looseLife() {
 
 function keyPress(keyName, number) {
     if (life <= 9 && hasWin == false) {
+        nbKeyUsed++
         key[number].setAttribute("data-state", "used")
         var usedLetters = JSON.parse(localStorage.getItem("usedLetters"))
         var found = false
@@ -486,6 +514,7 @@ function keyPress(keyName, number) {
         if (life == 10) {
             reset(word)
             write(word)
+            hasLost = true
             body.setAttribute("data-end", "lost")
             definition.setAttribute("data-gameStatue", "finished")
             currentStreakScore = 0
