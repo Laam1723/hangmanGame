@@ -211,39 +211,44 @@ function write(wordToWrite) {
     }
 }
 
+function restartAll() {
+    const gameMode = body.getAttribute("data-gameMode")
+    const word = JSON.parse(localStorage.getItem("word"))
+
+    if (hasWin == true || hasLost == true) {
+        if (gameMode == "classic") {
+            restartGame()
+            reset(word)
+            init(false)
+        }
+
+        if (gameMode == "v2") {
+            init(true, "chooseWord")
+        }
+    }
+    else if (nbKeyUsed >= 1 && hasWin == false && hasLost == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
+        currentStreakScore = 0
+        currentStreak.innerHTML = "Current streak: " + currentStreakScore
+        if (gameMode == "classic") {
+            restartGame()
+            reset(word)
+            init(false)
+        }
+
+        if (gameMode == "v2") {
+            init(true, "chooseWord")
+        }
+    }
+}
+
 //different style of keys
 let spaceAlreadyPressed = false
 function setListerners() {
     document.addEventListener("keydown", (e) => {
         if (e.code == "Space") {
             spaceAlreadyPressed = true
-            const gameMode = body.getAttribute("data-gameMode")
-            const word = JSON.parse(localStorage.getItem("word"))
             console.log(nbKeyUsed, life)
-            if( hasWin == true || hasLost == true){
-                if (gameMode == "classic") {
-                    restartGame()
-                    reset(word)
-                    init(false)
-                }
-
-                if (gameMode == "v2") {
-                    init(true, "chooseWord")
-                }
-            }
-            else if (nbKeyUsed >= 1 && hasWin == false && hasLost == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
-                currentStreakScore = 0
-                currentStreak.innerHTML = "Current streak: " + currentStreakScore
-                if (gameMode == "classic") {
-                    restartGame()
-                    reset(word)
-                    init(false)
-                }
-
-                if (gameMode == "v2") {
-                    init(true, "chooseWord")
-                }
-            }
+            restartAll()
         }
         else {
             keyPress(e.key, e.key.charCodeAt(0) - 97)
@@ -274,26 +279,11 @@ function setListerners() {
     })
 
     restart.addEventListener('click', () => {
-        if (spaceAlreadyPressed == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
-            const gameMode = body.getAttribute("data-gameMode")
-            const word = JSON.parse(localStorage.getItem("word"))
-            console.log(nbKeyUsed, life);
-            if (nbKeyUsed >= 1 && hasWin == false && hasLost == false) {
-                currentStreakScore = 0
-                currentStreak.innerHTML = "Current streak: " + currentStreakScore
-            }
-            if (gameMode == "classic") {
-                restartGame()
-                reset(word)
-                init(false)
-            }
-
-            if (gameMode == "v2") {
-                init(true, "chooseWord")
-            }
+        if (spaceAlreadyPressed == true) {
+            spaceAlreadyPressed = false
         }
         else {
-            spaceAlreadyPressed = false
+            restartAll()
         }
     })
 
