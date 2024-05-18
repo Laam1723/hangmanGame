@@ -309,8 +309,6 @@ p {
     animation-iteration-count: 1;
 }
 
-
-
 body[data-theme=dark]>#game>#replay {
     background-color: #99aab5;
 }
@@ -868,6 +866,10 @@ body[data-theme=light] #dbInfo {
 
 }
 
+body[data-gamemode=v2] #streakCounter {
+    display: none;
+}
+
 .streak {
     font-size: 12px;
     font-weight: bold;
@@ -1080,6 +1082,7 @@ body[data-keyboard=qwerty] #n {
         bottom: 45vh;
     }
 
+
     body[data-space=deployed] #guess {
         bottom: 30vh;
         animation: slide-down-guess .5s ease 0s 1 normal none;
@@ -1113,6 +1116,7 @@ body[data-keyboard=qwerty] #n {
     .letter {
         font-size: 64px;
     }
+
 
     .key {
         font-size: 32px;

@@ -30,6 +30,7 @@ const currentStreak = document.getElementById("currentStreak")
 const maxStreak = document.getElementById("maxStreak")
 let currentStreakScore = 0
 let maxStreakScore = localStorage.getItem("maxStreak")
+let debugMode = false
 if (maxStreakScore == undefined) {
     maxStreakScore = 0
     localStorage.setItem("maxStreak", maxStreakScore)
@@ -211,7 +212,10 @@ function write(wordToWrite) {
     }
 }
 
-function restartAll() {
+function restartAll(shifted) {
+    if (shifted == true ) {
+        body.setAttribute("data-gameMode", "v2")
+    }
     const gameMode = body.getAttribute("data-gameMode")
     const word = JSON.parse(localStorage.getItem("word"))
 
@@ -239,7 +243,11 @@ function restartAll() {
             init(true, "chooseWord")
         }
     }
+    else if (nbKeyUsed == 0 && gameMode == "v2") {
+        init(true, "chooseWord")
+    }
 }
+
 
 //different style of keys
 let spaceAlreadyPressed = false
@@ -248,10 +256,14 @@ function setListerners() {
         if (e.code == "Space") {
             spaceAlreadyPressed = true
             console.log(nbKeyUsed, life)
-            restartAll()
+            restartAll(true)
         }
         else {
-            keyPress(e.key, e.key.charCodeAt(0) - 97)
+            try {
+                keyPress(e.key, e.key.charCodeAt(0) - 97)
+            }
+            catch (e) {
+            }
         }
     })
 
@@ -401,7 +413,7 @@ function init(isV2, initiator) {
         fetchDefinition(word.join(""))
     }
     else if (isV2 == true) {
-        word = prompt("Choose a word (english alphabet letters only)")
+        word = prompt("Choose a word (english alphabet letters only)").toLocaleLowerCase()
         let validCharFound
         console.log((word != null || word != "") == false);
         if (word != null && word != "") {
@@ -457,12 +469,17 @@ function init(isV2, initiator) {
             }
             word = word.toLocaleLowerCase()
             word = word.split("")
-            console.log(word);
+            if (debugMode == true) {
+                console.log(word);
+            }
         }
+
     }
 
     localStorage.setItem("word", JSON.stringify(word))
-    console.log(word);
+    if (debugMode == true) {
+        console.log(word);
+    }
     for (let i = 0; i < word.length; i++) {
         foundLetters.push(" ")
     }
@@ -471,6 +488,20 @@ function init(isV2, initiator) {
     localStorage.setItem("numberOfFoundLetters", JSON.stringify(0))
     localStorage.setItem("usedLetters", JSON.stringify(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]))
     console.log(word.join(""))
+
+
+    let wordLength = game.offsetWidth - 20
+    console.log();
+
+    console.log(window.innerWidth);
+    if (wordLength >= window.innerWidth) {
+        game.setAttribute("style", "transform: scale(calc(" + window.innerWidth + "/" + wordLength + "));")
+        body.setAttribute("data-word", "long")
+    }
+    else {
+        game.removeAttribute("style")
+        body.setAttribute("data-word", "long")
+    }
 
 }
 
