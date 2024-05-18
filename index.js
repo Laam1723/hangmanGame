@@ -52,7 +52,6 @@ if (lang == undefined) {
     else {
         lang = "en"
     }
-    console.log(lang);
     localStorage.setItem("lang", JSON.stringify(lang))
 }
 langSelector.value = lang
@@ -60,7 +59,6 @@ definition.setAttribute("lang", lang)
 
 
 let keyboardLang = localStorage.getItem("keyboardLang")
-console.log(keyboardLang);
 
 if (keyboardLang == undefined || null) {
     keyboardLang = "qwerty"
@@ -143,7 +141,6 @@ function saveToLs(data) {
 
 function chooseWord() { //return a random word from the list
     let dbLength = 10 ** (data[lang].length.toString().length)
-    console.log(dbLength, data[lang].length.toString().length);
     var random
     while (random <= data[lang].length == false) {
         random = Math.round(Math.random() * dbLength)
@@ -216,35 +213,40 @@ function restartAll(shifted) {
     if (shifted == true ) {
         body.setAttribute("data-gameMode", "v2")
     }
+    else{
+        shifted = false
+    }
     const gameMode = body.getAttribute("data-gameMode")
     const word = JSON.parse(localStorage.getItem("word"))
 
-    if (hasWin == true || hasLost == true) {
-        if (gameMode == "classic") {
+    if(gameMode == "classic"){
+        if(hasWin == true || hasLost == true){
             restartGame()
             reset(word)
             init(false)
         }
-
-        if (gameMode == "v2") {
-            init(true, "chooseWord")
-        }
-    }
-    else if (nbKeyUsed >= 1 && hasWin == false && hasLost == false && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
-        currentStreakScore = 0
-        currentStreak.innerHTML = "Current streak: " + currentStreakScore
-        if (gameMode == "classic") {
+        else if(nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)){
+            currentStreakScore = 0
+            currentStreak.innerHTML = "Current streak: " + currentStreakScore
             restartGame()
             reset(word)
             init(false)
         }
-
-        if (gameMode == "v2") {
-            init(true, "chooseWord")
-        }
     }
-    else if (nbKeyUsed == 0 && gameMode == "v2") {
-        init(true, "chooseWord")
+
+    else if(gameMode == "v2"){
+        if(hasWin == true || hasLost == true){
+            restartGame()
+            reset(word)
+            init(true)
+        }
+        else if(nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)){
+            currentStreakScore = 0
+            currentStreak.innerHTML = "Current streak: " + currentStreakScore
+            restartGame()
+            reset(word)
+            init(true)
+        }
     }
 }
 
@@ -255,8 +257,12 @@ function setListerners() {
     document.addEventListener("keydown", (e) => {
         if (e.code == "Space") {
             spaceAlreadyPressed = true
-            console.log(nbKeyUsed, life)
-            restartAll(true)
+            if(e.shiftKey == false){
+                restartAll()
+            }
+            else{
+                restartAll(true)
+            }
         }
         else {
             try {
@@ -301,7 +307,6 @@ function setListerners() {
 
     definition.addEventListener("click", () => {
         const dataSpace = definition.getAttribute("data-Space")
-        // console.log(dataSpace);
         if (dataSpace == "collapsed") {
             body.setAttribute("data-space", "deployed")
             definition.setAttribute("data-space", "deployed")
@@ -334,7 +339,6 @@ function setListerners() {
         lang = selectedLang
         localStorage.setItem("lang", JSON.stringify(lang))
         definition.setAttribute("lang", lang)
-        console.log(lang);
         restartGame()
         reset(word)
         init(false)
@@ -353,7 +357,6 @@ function setListerners() {
 
     applyKeyboard.addEventListener("click", () => {
         keyboardLang = document.getElementById("keyboardSelect").value
-        console.log(keyboardLang);
         body.setAttribute("data-keyboard", keyboardLang)
         body.setAttribute("data-keyboard", keyboardLang)
         localStorage.setItem("keyboardLang", keyboardLang)
@@ -385,7 +388,6 @@ function restartGame() {
     body.setAttribute("data-end", "none")
     const definitionContainer = document.getElementById("definitionsContainer")
     if (lang == "en" && definitionContainer != null) {
-        console.log(definitionContainer);
         definitionContainer.remove()
     }
     definition.setAttribute("data-gameStatue", "unFinished")
@@ -406,7 +408,6 @@ function init(isV2, initiator) {
     if (listenerSet == false) {
         setListerners()
     }
-    // console.log(data.data.length);
     var foundLetters = []
     if (isV2 == false) {
         word = chooseWord().split("")
@@ -415,16 +416,13 @@ function init(isV2, initiator) {
     else if (isV2 == true) {
         word = prompt("Choose a word (english alphabet letters only)").toLocaleLowerCase()
         let validCharFound
-        console.log((word != null || word != "") == false);
         if (word != null && word != "") {
             const validChars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
             for (const letter of word.split("")) {
                 validCharFound = false
                 for (const validLetter of validChars) {
-                    console.log("letter", letter, "validLetter", validLetter)
                     if (letter == validLetter) {
                         validCharFound = true
-                        console.log("validWord");
                     }
                 }
                 if (validCharFound == false) {
@@ -435,7 +433,6 @@ function init(isV2, initiator) {
         else {
             validCharFound = false
         }
-        console.log(validCharFound);
 
 
         const gameMode = body.getAttribute("data-gameMode")
@@ -453,7 +450,6 @@ function init(isV2, initiator) {
 
         else {
             const lastWord = JSON.parse(localStorage.getItem("word"))
-            console.log(lastWord);
             restartGame()
             reset(lastWord)
             if (gameMode == "classic") {
@@ -487,13 +483,13 @@ function init(isV2, initiator) {
     localStorage.setItem("foundLetters", JSON.stringify(foundLetters))
     localStorage.setItem("numberOfFoundLetters", JSON.stringify(0))
     localStorage.setItem("usedLetters", JSON.stringify(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]))
-    console.log(word.join(""))
+    if(debugMode == true){
+        console.log(word.join(""))
+    }
 
 
     let wordLength = game.offsetWidth - 20
-    console.log();
 
-    console.log(window.innerWidth);
     if (wordLength >= window.innerWidth) {
         game.setAttribute("style", "transform: scale(calc(" + window.innerWidth + "/" + wordLength + "));")
         body.setAttribute("data-word", "long")
@@ -529,12 +525,10 @@ function keyPress(keyName, number) {
                     numberOfFoundLetters++
                 }
             }
-            console.log(life);
             if (found == false) {
                 looseLife()
             }
 
-            // console.log("numberOfFoundLetters",numberOfFoundLetters)
             if (numberOfFoundLetters == word.length) {
                 body.setAttribute("data-end", "win")
                 definition.setAttribute("data-gameStatue", "finished")
