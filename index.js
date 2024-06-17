@@ -1,12 +1,9 @@
 const restart = document.getElementById("replay")
 const restartIcon = document.getElementById("replayIcon")
-// const gameMode = document.getElementById("gameMode")
 const url = "./data.json"
-let data = localStorage.getItem("data")
 const body = document.body
 const keyboard = document.getElementById("keyboard")
 const key = document.querySelectorAll(".key")
-let nbKeyUsed = 0
 const game = document.getElementById("guess")
 const hangman = document.getElementById("hangman").children;
 const looseTile = document.getElementById("loose")
@@ -16,18 +13,18 @@ const moon = document.getElementById("moon")
 const sun = document.getElementById("sun")
 const definition = document.getElementById("definition")
 const switcher = document.getElementById("switchGameMode")
-let lang = JSON.parse(localStorage.getItem("lang"))
 const langSelector = document.getElementById("langSelect")
-const applyLang = document.getElementById("applyLang")
-const applyKeyboard = document.getElementById("applyKeyboard")
 const settings = document.getElementById("settings")
 const settingsIco = document.getElementById("settingsIco")
 const dbInfo = document.getElementById("dbInfo")
 const updateDb = document.getElementById("updateDb")
-let hasWin = false
-let hasLost = false
 const currentStreak = document.getElementById("currentStreak")
 const maxStreak = document.getElementById("maxStreak")
+let data = localStorage.getItem("data")
+let hasWin = false
+let nbKeyUsed = 0
+let lang = JSON.parse(localStorage.getItem("lang"))
+let hasLost = false
 let currentStreakScore = 0
 let maxStreakScore = localStorage.getItem("maxStreak")
 let debugMode = false
@@ -210,22 +207,22 @@ function write(wordToWrite) {
 }
 
 function restartAll(shifted) {
-    if (shifted == true ) {
+    if (shifted == true) {
         body.setAttribute("data-gameMode", "v2")
     }
-    else{
+    else {
         shifted = false
     }
     const gameMode = body.getAttribute("data-gameMode")
     const word = JSON.parse(localStorage.getItem("word"))
 
-    if(gameMode == "classic"){
-        if(hasWin == true || hasLost == true){
+    if (gameMode == "classic") {
+        if (hasWin == true || hasLost == true) {
             restartGame()
             reset(word)
             init(false)
         }
-        else if(nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)){
+        else if (nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
             currentStreakScore = 0
             currentStreak.innerHTML = "Current streak: " + currentStreakScore
             restartGame()
@@ -234,13 +231,13 @@ function restartAll(shifted) {
         }
     }
 
-    else if(gameMode == "v2"){
-        if(hasWin == true || hasLost == true){
+    else if (gameMode == "v2") {
+        if (hasWin == true || hasLost == true) {
             restartGame()
             reset(word)
             init(true)
         }
-        else if(nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)){
+        else if (nbKeyUsed >= 1 && confirm("Dou you realy want to restart. That will reset your streak of " + currentStreakScore)) {
             currentStreakScore = 0
             currentStreak.innerHTML = "Current streak: " + currentStreakScore
             restartGame()
@@ -257,10 +254,10 @@ function setListerners() {
     document.addEventListener("keydown", (e) => {
         if (e.code == "Space") {
             spaceAlreadyPressed = true
-            if(e.shiftKey == false){
+            if (e.shiftKey == false) {
                 restartAll()
             }
-            else{
+            else {
                 restartAll(true)
             }
         }
@@ -271,6 +268,19 @@ function setListerners() {
             catch (e) {
             }
         }
+    })
+
+    body.addEventListener("click", (e) => {
+        
+        console.log(e.target);
+        if(definition.getAttribute("data-space") == "deployed" && e.target == body){
+            definition.setAttribute("data-space", "collapsed")
+            body.setAttribute("data-space", "collapsed")
+        }
+        if(settings.getAttribute("data-space") == "deployed" && e.target == body){
+            settings.setAttribute("data-space", "collapsed")
+        }
+        console.log("click");
     })
 
     key.forEach((element, index) => {
@@ -333,15 +343,23 @@ function setListerners() {
         }
     })
 
-    applyLang.addEventListener("click", () => {
-        const word = JSON.parse(localStorage.getItem("word"))
-        const selectedLang = langSelector.value
-        lang = selectedLang
-        localStorage.setItem("lang", JSON.stringify(lang))
-        definition.setAttribute("lang", lang)
-        restartGame()
-        reset(word)
-        init(false)
+    document.addEventListener("change", (e) => {
+        if (e.target == langSelector) {
+            const word = JSON.parse(localStorage.getItem("word"))
+            const selectedLang = e.target.value
+            lang = selectedLang
+            localStorage.setItem("lang", JSON.stringify(lang))
+            definition.setAttribute("lang", lang)
+            restartGame()
+            reset(word)
+            init(false)
+        }
+        else {
+            keyboardLang = document.getElementById("keyboardSelect").value
+            body.setAttribute("data-keyboard", keyboardLang)
+            body.setAttribute("data-keyboard", keyboardLang)
+            localStorage.setItem("keyboardLang", keyboardLang)
+        }
     })
 
     settingsIco.addEventListener("click", () => {
@@ -355,12 +373,6 @@ function setListerners() {
         }
     })
 
-    applyKeyboard.addEventListener("click", () => {
-        keyboardLang = document.getElementById("keyboardSelect").value
-        body.setAttribute("data-keyboard", keyboardLang)
-        body.setAttribute("data-keyboard", keyboardLang)
-        localStorage.setItem("keyboardLang", keyboardLang)
-    })
 
     updateDb.addEventListener("click", () => {
         getData(url, 1)
@@ -370,6 +382,8 @@ function setListerners() {
         const UpdateTime = "Last update: " + Math.floor(timeElapsed * 10) / 10 + "h"
         dbInfo.innerHTML = UpdateTime
     })
+
+    
 
     listenerSet = true
 }
@@ -483,7 +497,7 @@ function init(isV2, initiator) {
     localStorage.setItem("foundLetters", JSON.stringify(foundLetters))
     localStorage.setItem("numberOfFoundLetters", JSON.stringify(0))
     localStorage.setItem("usedLetters", JSON.stringify(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]))
-    if(debugMode == true){
+    if (debugMode == true) {
         console.log(word.join(""))
     }
 
